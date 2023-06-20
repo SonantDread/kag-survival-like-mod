@@ -95,7 +95,7 @@ bool isBuildableAtPos(CBlob@ this, Vec2f p, TileType buildTile, CBlob @blob, boo
 		//cant build wood on stone background
 		return false;
 	}
-	else if (map.isTileSolid(backtile) || buildTile >= 257) // custom block support
+	else if (map.isTileSolid(backtile))
 	{
 		if (!buildSolid && !map.isTileSolid(backtile))
 		{
@@ -114,7 +114,7 @@ bool isBuildableAtPos(CBlob@ this, Vec2f p, TileType buildTile, CBlob @blob, boo
 			canPlaceNextTo(map, right) ||
 			canPlaceNextTo(map, up) ||
 			canPlaceNextTo(map, down)
-		) // todo: sand backwall thing here?
+		)
 	)
 	{
 		return false;
@@ -281,7 +281,7 @@ void SetTileAimpos(CBlob@ this, BlockCursor@ bc)
 
 u32 getCurrentBuildDelay(CBlob@ this)
 {
-	return (getRules().getCurrentState() != GAME ? this.get_u32("build delay")*1.5 : this.get_u32("build delay")*1.5);
+	return (getRules().getCurrentState() != GAME ? this.get_u32("warmup build delay") : this.get_u32("build delay"));
 }
 
 f32 getMaxBuildDistance(CBlob@ this)

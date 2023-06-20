@@ -32,6 +32,7 @@
 #include "Requirements.as"
 #include "Costs.as"
 #include "TeamIconToken.as"
+#include "CustomBlocks.as"
 
 const string blocks_property = "blocks";
 const string inventory_offset = "inventory offset";
@@ -50,9 +51,10 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const stri
 
 	const bool CTF = gamemode == "CTF";
 	const bool SCTF = gamemode == "SmallCTF";
-	// const bool TTH = gamemode == "TTH";
-	const bool TTH = true;
+	const bool TTH = gamemode == "TTH";
 	const bool SBX = gamemode == "Sandbox";
+
+	AddIconToken("$sandbag$", "World.png", Vec2f(8, 8), CMap::tile_sandbag);
 
 	BuildBlock[] page_0;
 	blocks.push_back(page_0);
@@ -112,7 +114,12 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const stri
 		blocks[0].push_back(b);
 	}
 	{
-		BuildBlock b(0, "fireplace", "$fireplace$", "fireplace\nOnly gives light!");
+		BuildBlock b(CMap::tile_sandbag, "sandbag", "$sandbag$", "Sandbag\nCan be moved through\nPrevents flooding");
+		AddRequirement(b.reqs, "blob", "mat_sand", "Sand", 100);
+		blocks[0].push_back(b);
+	}
+	{
+		BuildBlock b(0, "fireplace", "$fireplace$", "fireplace\nProduces light");
 		AddRequirement(b.reqs, "blob", "mat_wood", "Wood", 100);
 		AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 20);
 		b.buildOnGround = true; // sets into ground?
@@ -129,13 +136,13 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const stri
 	}
 	else if (TTH)
 	{
-		// {
-		// 	BuildBlock b(0, "factory", "$building$", "Factory\nAn item-producing factory\nRequires migrant");
-		// 	AddRequirement(b.reqs, "blob", "mat_wood", "Wood", WARCosts::factory_wood);
-		// 	b.buildOnGround = true;
-		// 	b.size.Set(40, 24);
-		// 	blocks[0].insertAt(9, b);
-		// }
+		{
+			BuildBlock b(0, "factory", "$building$", "Factory\nAn item-producing factory\nRequires migrant");
+			AddRequirement(b.reqs, "blob", "mat_wood", "Wood", WARCosts::factory_wood);
+			b.buildOnGround = true;
+			b.size.Set(40, 24);
+			blocks[0].insertAt(9, b);
+		}
 		{
 			BuildBlock b(0, "workbench", "$workbench$", "Workbench\nCreate trampolines, saws, and more");
 			AddRequirement(b.reqs, "blob", "mat_wood", "Wood", WARCosts::workbench_wood);

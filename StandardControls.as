@@ -359,7 +359,7 @@ void AdjustCamera(CBlob@ this, bool is_in_render)
 		zoomSpeed *= getRenderApproximateCorrectionFactor();
 	}
 
-	f32 minZoom = 0.5f; // TODO: make vars
+	f32 minZoom = 0.5f; // TODO: make vars for spyglasses and stuff, maybe enable cursor movement?
 	f32 maxZoom = 2.0f;
 
 	f32 zoom_target = 1.0f;

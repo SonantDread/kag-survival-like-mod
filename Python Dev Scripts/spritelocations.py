@@ -1,6 +1,6 @@
 from PIL import Image, ImageDraw
 import os
-
+# for world.png
 def label_image(image_path):
     # Open the image
     image = Image.open(image_path).convert("RGBA")

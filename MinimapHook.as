@@ -76,7 +76,6 @@ void CalculateMinimapColour( CMap@ map, u32 offset, TileType tile, SColor &out c
 	}
 	else if (map.isTileBackgroundNonEmpty(ctile) && !map.isTileGrass(tile)) {
 		
-		// TODO(hobey): maybe check if there's a door/platform on this backwall and make a custom color for them?
 		if (tile == CMap::tile_castle_back) 
 		{ 
 			col = color_minimap_castle_back;

@@ -1,5 +1,5 @@
 // Lantern script
-// TODO: add a lantern on wall sprite and give the ability to place them on walls
+
 void onInit(CBlob@ this)
 {
 	this.SetLight(true);

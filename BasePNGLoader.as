@@ -103,7 +103,6 @@ class PNGLoader
 
 			//print("ARGB = "+alpha+", "+pixel.getRed()+", "+pixel.getGreen()+", "+pixel.getBlue());
 
-			// TODO future reader, if the new angelscript release has arrived; consider using named arguments for spawnBlob etc if it doesn't clutter the lines too much.
 			// It might be nice for things like the static argument.
 
 			// Test color with alpha 255

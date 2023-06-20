@@ -1,8 +1,7 @@
-﻿// Quarters.as
-// todo: does this code work?
 #include "StandardControlsCommon.as"
 #include "GenericButtonCommon.as"
 
+// TODO: add time fast forward / skip feature
 const f32 heal_amount = 0.25f;
 const u8 heal_rate = 60;
 
@@ -20,6 +19,8 @@ void onInit(CBlob@ this)
 
 	this.addCommandID("rest");
 	this.getCurrentScript().runFlags |= Script::tick_hasattached;
+    this.Tag("builder always hit");
+    AddIconToken("$rest$", "InteractionIcons.png", Vec2f(32, 32), 29);
 }
 
 void onTick(CBlob@ this)
@@ -51,6 +52,9 @@ void onTick(CBlob@ this)
 						f32 oldHealth = patient.getHealth();
 						patient.server_Heal(heal_amount);
 						patient.add_f32("heal amount", patient.getHealth() - oldHealth);
+                        if(patient.getHealth() == patient.getInitialHealth()){ // fix for staying in the bed for an extra tick
+                            patient.server_DetachFrom(this);
+                        }
 					}
 				}
 				else
@@ -80,10 +84,10 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	}
 	else
 	{
-		this.set_Vec2f("shop offset", Vec2f(6, 0));
+		this.set_Vec2f("shop offset", Vec2f(0, 0));
 		CBitStream params;
 		params.write_u16(caller.getNetworkID());
-		caller.CreateGenericButton("$rest$", Vec2f(-6, 0), this, this.getCommandID("rest"), getTranslatedString("Rest"), params);
+		caller.CreateGenericButton("$rest$", Vec2f(0, 0), this, this.getCommandID("rest"), getTranslatedString("Rest"), params);
 	}
 	this.set_bool("shop available", isOverlapping);
 }
@@ -127,15 +131,15 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint@ attachedPoint)
 	attached.SetFacingLeft(true);
 	attached.AddScript("WakeOnHit.as");
 
-	if (not getNet().isClient()) return;
+	if (!getNet().isClient()) return;
 
 	CSprite@ sprite = this.getSprite();
 
 	if (sprite is null) return;
 
 	updateLayer(sprite, "bed", 1, true, false);
-	updateLayer(sprite, "zzz", 0, true, false);
-	updateLayer(sprite, "backpack", 0, true, false);
+	// updateLayer(sprite, "zzz", 0, true, false);
+	// updateLayer(sprite, "backpack", 0, true, false);
 
 	sprite.SetEmitSoundPaused(false);
 	sprite.RewindEmitSound();
@@ -168,7 +172,7 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint@ attachedPoint)
 
 	bed_head.SetAnimation(bed_head_animation);
 	bed_head.RotateBy(80, Vec2f_zero);
-	bed_head.SetOffset(Vec2f(1, 2));
+	bed_head.SetOffset(Vec2f(6.5, -4));
 	bed_head.SetFacingLeft(true);
 	bed_head.SetVisible(true);
 	bed_head.SetRelativeZ(2);
@@ -190,9 +194,7 @@ void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
 	if (sprite !is null)
 	{
 		updateLayer(sprite, "bed", 0, true, false);
-		updateLayer(sprite, "zzz", 0, false, false);
 		updateLayer(sprite, "bed head", 0, false, true);
-		updateLayer(sprite, "backpack", 0, false, false);
 
 		sprite.SetEmitSoundPaused(true);
 	}

@@ -1,6 +1,5 @@
 ﻿// Fireplace
-// todo: add auto extinguish and add button to fuel fire
-// todo: fix skygradient.png
+
 #include "ProductionCommon.as";
 #include "Requirements.as";
 #include "MakeFood.as";
@@ -9,7 +8,7 @@
 
 void onInit(CBlob@ this)
 {
-	this.getCurrentScript().tickFrequency = 5;
+	this.getCurrentScript().tickFrequency = 9;
 	this.getSprite().SetEmitSound("CampfireSound.ogg");
 	this.getSprite().SetAnimation("fire");
 	this.getSprite().SetFacingLeft(XORRandom(2) == 0);
@@ -19,11 +18,10 @@ void onInit(CBlob@ this)
 	this.SetLightColor(SColor(255 / 2.5, 255, 240, 171));
 
 	this.Tag("fire source");
-
+	//this.server_SetTimeToDie(60*3);
 	this.getSprite().SetZ(-20.0f);
 
 	this.addCommandID("extinguish");
-
 }
 
 void onTick(CBlob@ this)

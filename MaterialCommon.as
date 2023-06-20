@@ -219,7 +219,7 @@ namespace Material
 				harvestAmount = maxHarvest;
 			}
 
-			createFor(this, name, harvestAmount/2);
+			createFor(this, name, harvestAmount);
 		}
 	}
 
@@ -229,7 +229,7 @@ namespace Material
 		if (damage <= 0.f) return;
 		CMap@ map = getMap();
 
-		if (type >= 272 && type <= 286){ // sand tiles
+		if (type >= 272 && type <= 286){ // ! doesnt work
 			createFor(this, 'mat_sand', 5.0f * damage);
 		}
 
@@ -238,11 +238,11 @@ namespace Material
 
 		if (map.isTileThickStone(type))
 		{
-			createFor(this, 'mat_stone', (6.f * damage) / 2);
+			createFor(this, 'mat_stone', 6.f * damage);
 		}
 		else if (map.isTileStone(type))
 		{
-			createFor(this, 'mat_stone', (4.f * damage) / 2);
+			createFor(this, 'mat_stone', 4.f * damage);
 		}
 		else if (map.isTileCastle(type))
 		{
@@ -254,7 +254,7 @@ namespace Material
 		}
 		else if (map.isTileGold(type))
 		{
-			createFor(this, 'mat_gold', (4.f * damage) / 2);
+			createFor(this, 'mat_gold', 4.f * damage);
 		}
 	}
 }

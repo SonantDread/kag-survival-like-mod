@@ -1,14 +1,10 @@
-// TODO: make this actually lock onto player better
-// TODO: fix rotating shark code
-// TODO: increase drag after lunging to prevent mach speeds in water
-
 #include "AnimalConsts.as";
 
 //sprite
 
 void onInit(CSprite@ this)
 {
-	this.ReloadSprites(0, 0); //always blue
+	this.ReloadSprites(10, 10); // grey shark
 }
 
 const string angle_prop = "shark angle";
@@ -79,7 +75,7 @@ void onInit(CBlob@ this)
 	this.set_f32(terr_rad_property, 64.0f * 3); // wander farther
 	this.set_f32(target_searchrad_property, (96.0f * 10)); // larger see distance of players
 
-	this.set_u8(personality_property, AGGRO_BIT);
+	this.set_u8(personality_property, AGGRO_BIT); // not used
 
 	this.getBrain().server_SetActive(true);
 
@@ -133,6 +129,7 @@ void onTick(CBlob@ this)
 
 		if (this.get_u8(state_property) == MODE_TARGET)
 		{
+			this.set_f32("bite damage", (this.getShape().getVars().waterDragScale == 2.5f) ? 1.5f : 2.0f);
 			CBlob@ b = getBlobByNetworkID(this.get_netid(target_property));
 			if (b !is null && this.getDistanceTo(b) < 56.0f)
 			{
@@ -153,7 +150,7 @@ void onTick(CBlob@ this)
 				direction.Normalize();
 
 				Vec2f velocity;
-				f32 lungespeed = 6.0f; // speed of lunge
+				f32 lungespeed = 5.0f; // speed of lunge
 				// determine which way to lunge based on the relative positions of the shark and player
 				if (direction.x > 0) {
 					velocity = -direction * lungespeed;
@@ -165,6 +162,7 @@ void onTick(CBlob@ this)
 				this.set_s32("last lunged", getGameTime());
 				this.getShape().getVars().waterDragScale = 2.5f;
 			}
+
 			if(this.getShape().getVars().waterDragScale == 2.5f && getGameTime() - this.get_s32("last lunged") > this.get_s32("drag delay")){
 				this.getShape().getVars().waterDragScale = 1.0f;
 			}

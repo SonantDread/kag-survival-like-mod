@@ -20,14 +20,14 @@ TileType server_onTileHit(CMap@ map, f32 damage, u32 index, TileType oldTileType
             case CMap::custom_tile_sand_4:
             case CMap::custom_tile_sand_5:
             case CMap::custom_tile_sand_6:
-            case CMap::custom_tile_sand_7:  { return CMap::tile_sand_damaged;    }
-            case CMap::tile_sand_damaged:   { return CMap::tile_sand_damaged_2;  }
-            case CMap::tile_sand_damaged_2: { return CMap::tile_sand_damaged_3;  }
-            case CMap::tile_sand_damaged_3: { return CMap::tile_sand_background; }
+            case CMap::custom_tile_sand_7:  { return CMap::tile_sand_damaged;      }
+            case CMap::tile_sand_damaged:   { return CMap::tile_sand_damaged_2;    }
+            case CMap::tile_sand_damaged_2: { return CMap::tile_sand_damaged_3;    }
+            case CMap::tile_sand_damaged_3: { return CMap::tile_sand_background;   }
 
-            case CMap::tile_sandbag:   { return CMap::tile_sandbag_damaged_2; }
-            case CMap::tile_sandbag_2: { return CMap::tile_sandbag_damaged_3; }
-            case CMap::tile_sandbag_3: { return CMap::tile_ground_back;       }
+            case CMap::tile_sandbag:        { return CMap::tile_sandbag_damaged_2; }
+            case CMap::tile_sandbag_2:      { return CMap::tile_sandbag_damaged_3; }
+            case CMap::tile_sandbag_3:      { return CMap::tile_ground_back;       }
         }
     }
     return map.getTile(index).type;
@@ -82,6 +82,24 @@ void onSetTile(CMap@ map, u32 index, TileType tile_new, TileType tile_old)
                 break;
             }
 
+			// sand backwall
+            case CMap::tile_sand_background:
+            case CMap::tile_sand_background_2:
+            case CMap::tile_sand_background_3:
+            case CMap::tile_sand_background_4:
+            case CMap::tile_sand_background_5:
+            case CMap::tile_sand_background_6:
+            case CMap::tile_sand_background_7:
+            case CMap::tile_sand_background_8:
+            case CMap::tile_sand_background_9:
+            case CMap::tile_sand_background_10:
+            {
+				map.server_AddSector(pos, pos, "SAND_BACKWALL"); // assume that tiles are sand & sand backwalls
+				map.SetTile(index, CMap::tile_sand_background+XORRandom(6));
+                map.AddTileFlag(index, Tile::BACKGROUND | Tile::LIGHT_PASSES | Tile::WATER_PASSES);
+				break;
+            }
+
             // sandbag
             case CMap::tile_sandbag:
             case CMap::tile_sandbag_2:
@@ -116,24 +134,6 @@ void onSetTile(CMap@ map, u32 index, TileType tile_new, TileType tile_old)
                 map.AddTileFlag(index, Tile::COLLISION | Tile::LIGHT_PASSES);
                 map.RemoveTileFlag(index, Tile::SOLID | Tile::LIGHT_SOURCE | Tile::WATER_PASSES);
                 break;
-            }
-			
-			// sand backwall
-            case CMap::tile_sand_background:
-            case CMap::tile_sand_background_2:
-            case CMap::tile_sand_background_3:
-            case CMap::tile_sand_background_4:
-            case CMap::tile_sand_background_5:
-            case CMap::tile_sand_background_6:
-            case CMap::tile_sand_background_7:
-            case CMap::tile_sand_background_8:
-            case CMap::tile_sand_background_9:
-            case CMap::tile_sand_background_10:
-            {
-				map.server_AddSector(pos, pos, "SAND_BACKWALL"); // assume that tiles are sand & sand backwalls
-				map.SetTile(index, CMap::tile_sand_background+XORRandom(6));
-                map.AddTileFlag(index, Tile::BACKGROUND | Tile::LIGHT_PASSES | Tile::WATER_PASSES);
-				break;
             }
         }
     }

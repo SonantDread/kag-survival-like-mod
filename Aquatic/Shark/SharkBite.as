@@ -54,6 +54,14 @@ void onTick(CBlob@ this)
 		}
 	}
 
+	bool facing_left = this.isFacingLeft();
+
+	// hitbox ~= 5 blocks
+	Vec2f pos = this.getPosition();
+
+	// TODO: check blocks in 3x2 in the direction and bite closest one
+
+	BiteBlocks(this, Vec2f(0,0), 1.0f);
 }
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point1)
@@ -134,5 +142,11 @@ void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@
 	if (damage > 0.0f)
 	{
 		this.getSprite().PlayRandomSound(this.get_string("bite sound"));
+	}
+}
+
+void BiteBlocks(CBlob@ shark, Vec2f hitpos, f32 damage){
+	if(getMap().hasTileFlag(hitpos, Tile::FLAMMABLE) && getMap().isTileSolid(hitpos)){ // wood stuff
+		getMap().server_DestroyTile(hitpos, damage);
 	}
 }

@@ -108,7 +108,7 @@ void onInit(CBlob@ this)
 	}
 	this.set_s32("last lunged", 0);
 
-	this.set_s32("drag delay", 1 * getTicksASecond());
+	this.set_s32("drag delay", 1 * getTicksASecond()); // 1 second extra drag delay after lunge
 	this.set_s32("sprite rotation", 0);
 }
 

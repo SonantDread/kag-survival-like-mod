@@ -20,14 +20,17 @@ TileType server_onTileHit(CMap@ map, f32 damage, u32 index, TileType oldTileType
             case CMap::custom_tile_sand_4:
             case CMap::custom_tile_sand_5:
             case CMap::custom_tile_sand_6:
-            case CMap::custom_tile_sand_7:  { return CMap::tile_sand_damaged;      }
-            case CMap::tile_sand_damaged:   { return CMap::tile_sand_damaged_2;    }
-            case CMap::tile_sand_damaged_2: { return CMap::tile_sand_damaged_3;    }
-            case CMap::tile_sand_damaged_3: { return CMap::tile_sand_background;   }
+            case CMap::custom_tile_sand_7:     { return CMap::tile_sand_damaged;      }
+            case CMap::tile_sand_damaged:      { return CMap::tile_sand_damaged_2;    }
+            case CMap::tile_sand_damaged_2:    { return CMap::tile_sand_damaged_3;    }
+            case CMap::tile_sand_damaged_3:    { return CMap::tile_sand_background;   }
 
-            case CMap::tile_sandbag:        { return CMap::tile_sandbag_damaged_2; }
-            case CMap::tile_sandbag_2:      { return CMap::tile_sandbag_damaged_3; }
-            case CMap::tile_sandbag_3:      { return CMap::tile_ground_back;       }
+            case CMap::tile_sandbag:
+            case CMap::tile_sandbag_2:
+            case CMap::tile_sandbag_3:         { return CMap::tile_sandbag_damaged;   }
+            case CMap::tile_sandbag_damaged:   { return CMap::tile_sandbag_damaged_2; }
+            case CMap::tile_sandbag_damaged_2: { return CMap::tile_sandbag_damaged_3; }
+            case CMap::tile_sandbag_damaged_3: { return CMap::tile_ground_back;       }
         }
     }
     return map.getTile(index).type;
@@ -56,7 +59,7 @@ void onSetTile(CMap@ map, u32 index, TileType tile_new, TileType tile_old)
                 map.RemoveTileFlag(index, Tile::LIGHT_PASSES | Tile::LIGHT_SOURCE);
                 break;
             }
-            
+
             // damaged sand
             case CMap::tile_sand_damaged:
             {
@@ -106,7 +109,7 @@ void onSetTile(CMap@ map, u32 index, TileType tile_new, TileType tile_old)
             case CMap::tile_sandbag_3:
             {
                 map.SetTile(index, CMap::tile_sandbag);
-                map.AddTileFlag(index, Tile::COLLISION | Tile::LIGHT_PASSES);
+                map.AddTileFlag(index, Tile::COLLISION | Tile::LIGHT_PASSES | Tile::BACKGROUND);
                 map.RemoveTileFlag(index, Tile::SOLID | Tile::LIGHT_SOURCE | Tile::WATER_PASSES);
                 break;
             }
@@ -115,7 +118,7 @@ void onSetTile(CMap@ map, u32 index, TileType tile_new, TileType tile_old)
             case CMap::tile_sandbag_damaged:
             {
                 map.SetTile(index, CMap::tile_sandbag_damaged);
-                map.AddTileFlag(index, Tile::COLLISION | Tile::LIGHT_PASSES);
+                map.AddTileFlag(index, Tile::COLLISION | Tile::LIGHT_PASSES | Tile::BACKGROUND);
                 map.RemoveTileFlag(index, Tile::SOLID | Tile::LIGHT_SOURCE | Tile::WATER_PASSES);
                 break;
             }
@@ -123,15 +126,15 @@ void onSetTile(CMap@ map, u32 index, TileType tile_new, TileType tile_old)
             case CMap::tile_sandbag_damaged_2:
             {
                 map.SetTile(index, CMap::tile_sandbag_damaged_2);
-                map.AddTileFlag(index, Tile::COLLISION | Tile::LIGHT_PASSES);
+                map.AddTileFlag(index, Tile::COLLISION | Tile::LIGHT_PASSES | Tile::BACKGROUND);
                 map.RemoveTileFlag(index, Tile::SOLID | Tile::LIGHT_SOURCE | Tile::WATER_PASSES);
                 break;
             }
-            
+
             case CMap::tile_sandbag_damaged_3:
             {
                 map.SetTile(index, CMap::tile_sandbag_damaged_3);
-                map.AddTileFlag(index, Tile::COLLISION | Tile::LIGHT_PASSES);
+                map.AddTileFlag(index, Tile::COLLISION | Tile::LIGHT_PASSES | Tile::BACKGROUND);
                 map.RemoveTileFlag(index, Tile::SOLID | Tile::LIGHT_SOURCE | Tile::WATER_PASSES);
                 break;
             }

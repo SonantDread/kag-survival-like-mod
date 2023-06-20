@@ -1,4 +1,4 @@
-
+// TODO: FIX PLACING SAND BAG ON EACH OTHER
 const f32 MAX_BUILD_LENGTH = 4.0f;
 
 shared class BlockCursor

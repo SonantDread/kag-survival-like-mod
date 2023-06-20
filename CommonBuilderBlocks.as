@@ -114,8 +114,8 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const stri
 		blocks[0].push_back(b);
 	}
 	{
-		BuildBlock b(CMap::tile_sandbag, "sandbag", "$sandbag$", "Sandbag\nCan be moved through\nPrevents flooding");
-		AddRequirement(b.reqs, "blob", "mat_sand", "Sand", 100);
+		BuildBlock b(CMap::tile_sandbag + XORRandom(3), "sandbag", "$sandbag$", "Sandbag\nCan be moved through\nPrevents flooding");
+		AddRequirement(b.reqs, "blob", "mat_sand", "Sand", 25);
 		blocks[0].push_back(b);
 	}
 	{

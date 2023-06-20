@@ -1,5 +1,5 @@
 // used for the game's day / night cycle
-
+// TODO: this apparently ticks time wrongly?
 void onInit(CMap@ this){
     this.SetDayTime(.5); // set mid day
 }

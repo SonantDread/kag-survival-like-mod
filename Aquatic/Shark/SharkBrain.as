@@ -163,6 +163,7 @@ void onTick(CBrain@ this)
 
 					for (uint step = 0; step < blobs.length; ++step)
 					{
+						//TODO: sort on proximity? done by engine?
 						CBlob@ other = blobs[step];
 
 						if (other is blob) continue; //lets not run away from / try to eat ourselves...

@@ -131,7 +131,7 @@ void onTick(CBlob@ this)
 		{
 			this.set_f32("bite damage", (this.getShape().getVars().waterDragScale == 2.5f) ? 1.5f : 2.0f);
 			CBlob@ b = getBlobByNetworkID(this.get_netid(target_property));
-			if (b !is null && this.getDistanceTo(b) < 56.0f * 2.0f)
+			if (b !is null && this.getDistanceTo(b) < 56.0f)
 			{
 				this.Tag(chomp_tag);
 			}
@@ -141,7 +141,7 @@ void onTick(CBlob@ this)
 			}
 
 			// shark lunge
-			if (XORRandom(5) == 0 && getGameTime() - this.get_s32("last lunged") > (XORRandom(6)+6) * getTicksASecond() && b !is null && this !is null) {
+			if (XORRandom(5) == 0 && getGameTime() - this.get_s32("last lunged") > (XORRandom(6)+3) * getTicksASecond() && b !is null && this !is null) {
 				Vec2f sharkpos = this.getPosition();
 				Vec2f playerpos = b.getPosition();
 
@@ -160,7 +160,7 @@ void onTick(CBlob@ this)
 
 				this.setVelocity(velocity);
 				this.set_s32("last lunged", getGameTime());
-				this.getShape().getVars().waterDragScale = 2.5f;
+				this.getShape().getVars().waterDragScale = 1.75f; // no high speed for long times
 			}
 
 			if(this.getShape().getVars().waterDragScale == 2.5f && getGameTime() - this.get_s32("last lunged") > this.get_s32("drag delay")){

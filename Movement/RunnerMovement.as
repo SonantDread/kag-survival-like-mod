@@ -609,10 +609,11 @@ void onTick(CMovement@ this)
 	{
 		if(blob.isOnGround()){
 			Vec2f pos = blob.getPosition();
-			if(getMap().isInWater(Vec2f(pos.x + 1, pos.y + 6.0)) || // bottom right
+			if((getMap().isInWater(Vec2f(pos.x + 1, pos.y + 6.0)) || // bottom right
 			getMap().isInWater(Vec2f(pos.x - 8, pos.y - 1)) || // bottom left
 			getMap().isInWater(Vec2f(pos.x + 1, pos.y - 8)) || // top left
-			getMap().isInWater(Vec2f(pos.x + 8, pos.y + 1))){ // top right
+			getMap().isInWater(Vec2f(pos.x + 8, pos.y + 1))) && // top right
+			!blob.isInWater()){
 				moveVars.walkFactor *= .80f; // 20% slower in 1 tall water
 			}
 		}

@@ -5,7 +5,7 @@
 // TODO: SHARK AIMS TO GO BACK IN WATER IF IT GOES OUT
 // TODO: MAKE SHARK HAVE LOW CHANCE TO ATTACK EACH OTHER INSTEAD OF BEING FRIENDS
 
-// TODO: CHECK "MODE" AND "PERSONALITY"
+// TODO: builderlogic.as line 374
 
 #define SERVER_ONLY
 
@@ -122,7 +122,7 @@ void onTick(CBrain@ this)
 				this.SetPathTo(targetpos, false);
 				this.SetTarget(target);
 
-				if(!getMap().rayCastSolidNoBlobs(pos, targetpos)){
+				// if(!getMap().rayCastSolidNoBlobs(pos, targetpos)){
 					// direct path to target
 					// TODO: maybe this somehow gets stuck on other blobs?
 					// TODO: maybe this gets stuck on walls?
@@ -131,21 +131,22 @@ void onTick(CBrain@ this)
 
 					blob.setKeyPressed(xpos < 0.0f ? key_left : key_right, true);
 					blob.setKeyPressed(ypos < 0.0f ? key_up : key_down, true);
+					print("Key Left: " + (xpos < 0.0f ? key_left : key_right));
 
 					// blob.setKeyPressed((territory_dir.x < 0.0f) ? key_left : key_right, true);
 					// blob.setKeyPressed((territory_dir.y > 0.0f) ? key_down : key_up, true);
-				}
-				else{
-					//not a direct path to target
-					// TODO: add this
-					print("path not direct.");
+				// }
+				// else{
+				// 	//not a direct path to target
+				// 	// TODO: add this
+				// 	print("path not direct.");
 
-					f32 xpos = (targetpos.x - pos.x);
-					f32 ypos = (targetpos.y - pos.y);
+				// 	f32 xpos = (targetpos.x - pos.x);
+				// 	f32 ypos = (targetpos.y - pos.y);
 
-					blob.setKeyPressed(xpos < 0.0f ? key_left : key_right, true);
-					blob.setKeyPressed(ypos < 0.0f ? key_up : key_down, true);
-				}
+				// 	blob.setKeyPressed(xpos < 0.0f ? key_left : key_right, true);
+				// 	blob.setKeyPressed(ypos < 0.0f ? key_up : key_down, true);
+				// }
 			}
 			else{
 				mode = MODE_IDLE;
@@ -160,14 +161,19 @@ void onTick(CBrain@ this)
 
 			CBlob@[] available_players;
 
+			// if()
 			for(int player_index = 0; player_index < getPlayerCount(); ++player_index){
 				CPlayer@ player = getPlayer(player_index);
 
 				if(player is null){ return; }
+				if(player.getBlob() is null){ return; }
 				if(blob is null) { return; }
+				print("Target is null: " + (target is null));
 
-				if(player.getBlob().hasTag("flesh") && player.getBlob().isInWater() && (player.getBlob().getPosition() - blob.getPosition()).getLength() <= search_radius){
-					available_players.push_back(player.getBlob()); // player in water, player has tag "flesh", and player is within search radius
+				if(player.getBlob().hasTag("flesh")
+				&& player.getBlob().isInWater() &&
+				(player.getBlob().getPosition() - blob.getPosition()).getLength() <= search_radius){
+					available_players.push_back(player.getBlob());
 				}
 			}
 			
@@ -183,6 +189,7 @@ void onTick(CBrain@ this)
 				}
 
 				blob.set_netid(target_property, closestplayer.getNetworkID());
+				print("Target: " + closestplayer.getPlayer().getUsername());
 				mode = MODE_TARGET;
 			}
 			else{

@@ -1,5 +1,3 @@
-// todo: modify this
-
 const string delay_property = "brain_delay";
 const string state_property = "brain_state";
 

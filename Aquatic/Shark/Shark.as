@@ -131,7 +131,7 @@ void onTick(CBlob@ this)
 		{
 			this.set_f32("bite damage", (this.getShape().getVars().waterDragScale == 2.5f) ? 1.5f : 2.0f);
 			CBlob@ b = getBlobByNetworkID(this.get_netid(target_property));
-			if (b !is null && this.getDistanceTo(b) < 56.0f)
+			if (b !is null && this.getDistanceTo(b) < 56.0f * 2.0f)
 			{
 				this.Tag(chomp_tag);
 			}
@@ -180,48 +180,4 @@ void onTick(CBlob@ this)
 	{
 		this.SetFacingLeft(vel.x < 0);
 	}
-
-	//rotate based on velocity
-
-	// CSprite@ sprite = this.getSprite();
-	// bool left = this.isFacingLeft();
-	// vel = this.getVelocity();
-	// vel.y *= -0.5f;
-
-	// f32 targetAngle = 0.0f;
-	// if (vel.LengthSquared() > 0.01f) // check if the velocity is significant enough
-	// {
-	// 	targetAngle = -vel.Angle();
-	// }
-
-	// f32 currentAngle = this.get_s32("sprite rotation");
-	// f32 change = targetAngle - currentAngle;
-
-	// // normalize the angle change to be within -180 to 180 degrees
-	// if (change > 180.0f)
-	// {
-	// 	change -= 360.0f;
-	// }
-	// else if (change < -180.0f)
-	// {
-	// 	change += 360.0f;
-	// }
-
-	// // gradually adjust the angle towards the target angle
-	// f32 maxChange = Maths::Min(Maths::Abs(change) * 0.1f, 10.0f) / 5.0f; // how much change can the shark angle have?
-	// f32 angleChange = (left ? 1 : -1) * maxChange;
-	// if (Maths::Abs(change) < maxChange)
-	// {
-	// 	angleChange = change;
-	// }
-	// f32 newAngle = currentAngle + angleChange;
-
-	// // limit the maximum angle of rotation
-	// f32 maxAngle = 20.0f;
-	// newAngle = Maths::Clamp(newAngle, -maxAngle, maxAngle);
-
-	// // rotate the sprite
-	// sprite.ResetTransform();
-	// sprite.RotateByDegrees(-newAngle, Vec2f(sprite.getFrameWidth() / 2, sprite.getFrameHeight() / 2));
-	// this.set_s32("sprite rotation", newAngle);
 }

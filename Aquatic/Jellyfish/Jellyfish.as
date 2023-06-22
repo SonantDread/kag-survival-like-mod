@@ -1,23 +1,30 @@
 // this file handles movement and damaging states
 
-#import "JellyFishConsts.as"
-#import "PressOldKeys.as"
-#import "Hitters.as"
-#import "KnockedCommon.as"
-#import "JellyfishConsts.as"
+#include "JellyFishConsts.as"
+#include "PressOldKeys.as"
+#include "Hitters.as"
+#include "KnockedCommon.as"
+
+
 
 // important vars
+
 void onInit(CBlob@ this){
     this.Tag("flesh");
     this.Tag("builder always hits");
     this.Tag("jellyfish");
     this.set_s32("last sting time", getGameTime());
     this.set_u8("action type", MODE_IDLE);
-    blob.set_Vec2f("last water position", blob.getPosition()); // assume we spawn in water
+    this.set_Vec2f("last water position", this.getPosition()); // assume we spawn in water
 }
 
 void onInit(CBrain@ this){
     this.getBlob().set_u8(state_property, MODE_IDLE);
+}
+
+void onInit(CShape@ this)
+{
+    this.SetRotationsAllowed(false);
 }
 
 void onTick(CBrain@ this){
@@ -42,17 +49,17 @@ void onTick(CBrain@ this){
         if(action == MODE_IDLE){
             // find water if out of it
             if(!blob.isInWater()){
-                this.set_u8("action type", MODE_FIND_WATER);
+                blob.set_u8("action type", MODE_FIND_WATER);
             }
 
             CBlob@ our_friend = getBlobByNetworkID(blob.get_netid(friend_property));
             if (our_friend is null)
             {
-                this.set_u8("action type", MODE_IDLE);
+                blob.set_u8("action type", MODE_IDLE);
             }
 
             else{
-                this.set_u8("action type", MODE_FIND_FRIENDS);
+                blob.set_u8("action type", MODE_FIND_FRIENDS);
             }
         }
 
@@ -67,17 +74,17 @@ void onTick(CBrain@ this){
 			
             if (our_friend is null)
             {
-                this.set_u8("action type", MODE_IDLE);
+                blob.set_u8("action type", MODE_IDLE);
 			}
 
             else{
                 // todo: prevent these from just overlapping
-                Vec2f targetpos = our_friend.getPosition() - blob.getPosition();
+                f32 targetpos = (our_friend.getPosition() - blob.getPosition()).getLength();
                 // todo: check if this works
-                this.setKeyPressed(key_left, targetpos > 0 ? true : false);
-                this.setKeyPressed(right, targetpos < 0 ? true : false);
-                this.setKeyPressed(key_up, targetpos > 0 ? true : false);
-                this.setKeyPressed(key_down, targetpos < 0 ? true : false);
+                blob.setKeyPressed(key_left, targetpos > 0 ? true : false);
+                blob.setKeyPressed(key_right, targetpos < 0 ? true : false);
+                blob.setKeyPressed(key_up, targetpos > 0 ? true : false);
+                blob.setKeyPressed(key_down, targetpos < 0 ? true : false);
             }
         }
     }
@@ -94,14 +101,19 @@ void onTick(CBlob@ this){
 }
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid){
-    if(blob.hasTag("flesh") && (getGameTime() - this.get_s32("last sting time")) > 45){
+    if(blob is null){ return; }
+    if(blob.hasTag("flesh") && (getGameTime() - this.get_s32("last sting time")) > 30){
         Sting(blob);
     }
     this.set_s32("last sting time", getGameTime());
 }
 
+bool doesCollideWithBlob(CBlob@ this, CBlob@ blob){
+    return false;
+}
+
 void Sting(CBlob@ this){
-    this.server_Hit(this, this.getPosition(), Vec2f(facing_left ? -1.0 : 1.0, 0.0f);, 1.0f, hitter::falling);
+    this.server_Hit(this, this.getPosition(), Vec2f(this.isFacingLeft() ? -1.0 : 1.0, 0.0f), 1.0f, Hitters::fall);
 
     setKnocked(this, 15); // stun player for half a second
 

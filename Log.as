@@ -19,7 +19,7 @@ void onInit(CBlob@ this)
 
 		dictionary harvest;
 		harvest.set('mat_wood', 20 * 1.5); // 1.5x wood
-		this.setHealth(this.getHealth() * .5); // half hp
+		this.server_SetHealth(this.getHealth() * .5); // half hp
 		this.set('harvest', harvest);
 	}
 

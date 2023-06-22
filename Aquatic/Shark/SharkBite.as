@@ -41,47 +41,54 @@ void onInit(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
-	if(getGameTime() % 20 == 0){ // no instant break / kill
-		CBlob@[] blobs;
-		getMap().getBlobsInRadius(this.getPosition(), 2 * getMap().tilesize, @blobs);
+	CBlob@[] blobs;
+	getMap().getBlobsInRadius(this.getPosition(), 2 * getMap().tilesize, @blobs);
 
-		for(int i = 0; i < blobs.size(); ++i){
-			if(blobs[i] !is null && this !is null){
-				if(canEat(this, blobs[i])){
-					Bite(this, blobs[i], (blobs[i].getPosition() + this.getPosition()) * 0.5f);
-				}
+	for(int i = 0; i < blobs.size(); ++i){
+		if(blobs[i] !is null && this !is null){
+			if(canEat(this, blobs[i])){
+				Bite(this, blobs[i], (blobs[i].getPosition() + this.getPosition()) * 0.5f);
 			}
 		}
-
-		bool facing_left = this.isFacingLeft();
-
-		// hitbox ~= 5 blocks
-		Vec2f pos = this.getPosition();
-
-		// TODO: check blocks in 3x2 in the direction and bite closest one
-
-		u32[] possibleblocks;
-		for(int y = 0; y < 5.0f; ++y){
-			for(int x = 0; x < 3.0f; ++x){
-				if(getMap().hasTileFlag(getMap().getTileOffsetFromTileSpace(Vec2f(pos.x + x, pos.y + y)), Tile::FLAMMABLE | Tile::SOLID)){ // this needs an offset
-					u32 possibleblocks = getMap().getTileOffsetFromTileSpace(Vec2f(pos.x + x, pos.y + y));
-				}
-			}
-		}
-
-		if(possibleblocks.size() == 0){ return; }
-
-		u32 closestblock = possibleblocks[0];
-		for(int block = 0; block < possibleblocks.size(); ++block){
-			if(possibleblocks[block] > closestblock){
-				u32 closestblock = possibleblocks[block];
-			}
-		}
-
-		Vec2f newclosestblock = getMap().getTileSpacePosition(closestblock);
-
-		getMap().server_DestroyTile(newclosestblock, 1.0f);
 	}
+
+	bool facing_left = this.isFacingLeft();
+
+	// hitbox ~= 5 blocks
+	Vec2f pos = this.getPosition();
+
+	// TODO: check blocks in 3x2 in the direction and bite closest one
+	// TODO: support facing left & right, instead of just right
+
+	u32[] possibleblocks;
+	for(int y = 0; y < 5.0f; ++y){
+		for(int x = 0; x < 3.0f; ++x){
+			if(this.isFacingLeft()){ // todo: change these checks from u32 to Vec2f
+				if(getMap().hasTileFlag(getMap().getTileOffsetFromTileSpace(Vec2f(pos.x - x, pos.y - y)), Tile::FLAMMABLE | Tile::SOLID)){
+					possibleblocks.push_back(getMap().getTileOffsetFromTileSpace(Vec2f(pos.x - x, pos.y - y)));
+				}
+			}
+			else{
+				if(getMap().hasTileFlag(getMap().getTileOffsetFromTileSpace(Vec2f(pos.x + x, pos.y + y)), Tile::FLAMMABLE | Tile::SOLID)){
+					possibleblocks.push_back(getMap().getTileOffsetFromTileSpace(Vec2f(pos.x + x, pos.y + y)));
+				}
+			}
+		}
+	}
+
+	print('hello');
+	if(possibleblocks.size() == 0){ return; }
+
+	u32 closestblock = possibleblocks[0];
+	for(int block = 0; block < possibleblocks.size(); ++block){
+		if(possibleblocks[block] > closestblock){
+			u32 closestblock = possibleblocks[block];
+		}
+	}
+
+	Vec2f newclosestblock = getMap().getTileSpacePosition(closestblock);
+
+	getMap().server_DestroyTile(newclosestblock, 1.0f);
 }
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point1)

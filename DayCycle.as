@@ -7,7 +7,7 @@ void onInit(CMap@ this){
 void onInit(CRules@ this)
 {
     // time grace period of 10 minutes
-    this.set_f32("time grace period", (30*60*10));
+    this.set_f32("time grace period", (getTicksASecond()*60*10));
     this.set_bool("graceperiod", true); // doesnt work on cmap init
 }
 
@@ -23,7 +23,7 @@ void onTick(CRules@ rules) // this doesnt run on tick in gamemode.cfg?
     // grace period
     if(graceperiod){
         if(time <= gracetime){
-            if(getGameTime() % (30*10) == 0){ // prevent spam
+            if(getGameTime() % (getTicksASecond()*10) == 0){ // prevent spam
                 print("Time tried to tick but grace period prevented it.");
             }
             return;

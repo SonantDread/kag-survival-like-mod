@@ -1,4 +1,3 @@
-// TODO: FIX PLACING SAND BAG ON EACH OTHER
 const f32 MAX_BUILD_LENGTH = 4.0f;
 
 shared class BlockCursor
@@ -74,6 +73,14 @@ bool isBuildableAtPos(CBlob@ this, Vec2f p, TileType buildTile, CBlob @blob, boo
 	{
 		sameTile = true;
 		return false;
+	}
+
+	// TODO: check if this code works
+	if(buildTile == 304 || buildTile == 305 || buildTile == 306){ // sandbag
+		if(map.getTile(offset).type == 304 || map.getTile(offset).type == 305 || map.getTile(offset).type == 306){
+			sameTile = true;
+			return false;
+		}
 	}
 
 	if (map.isTileCollapsing(offset))

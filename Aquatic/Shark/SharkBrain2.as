@@ -1,4 +1,4 @@
-//brain
+// shark brain
 
 // TODO: AGGRESSIVE SHARK
 // TODO: FIX PRIORITY FOR EATING TO BE PLAYERS
@@ -14,9 +14,10 @@
 
 void onInit(CBrain@ this)
 {
-	CBlob @blob = this.getBlob();
+	CBlob@ blob = this.getBlob();
 	blob.set_u8(delay_property , 5 + XORRandom(5));
 	blob.set_u8(state_property, MODE_IDLE);
+	blob.set_Vec2f("last water position", blob.getPosition());
 
 	if (!blob.exists(terr_rad_property))
 	{
@@ -74,8 +75,11 @@ void onTick(CBrain@ this)
 	{
 		delay = 4 + XORRandom(8);
 
+		if(blob.isInWater()){
+			blob.set_Vec2f("last water position", blob.getPosition());
+		}
+
         u8 mode = blob.get_u8(state_property);
-        // u8 personality = blob.get_u8(personality_property);
 
 		CBlob@ target = getBlobByNetworkID(blob.get_netid(target_property));
 
@@ -83,7 +87,6 @@ void onTick(CBrain@ this)
             mode = MODE_IDLE;
         }
         else { // target exists, set modes
-			print("Mode: " + mode);
 			f32 search_radius = blob.get_f32(target_searchrad_property) * 10;
 
 			if(!blob.isInWater()){
@@ -105,7 +108,6 @@ void onTick(CBrain@ this)
 
 			else{
 				mode = MODE_TARGET;
-				print("targeting");
 			}
 		}
 
@@ -116,7 +118,6 @@ void onTick(CBrain@ this)
 			f32 search_radius = blob.get_f32(target_searchrad_property) * 5;
 
 			// are we inside the radius of finding a target?
-			print("chose keys.");
 			if((targetpos - pos).getLength() <= search_radius){
 				// todo: code shark target mode, and find water
 				this.SetPathTo(targetpos, false);
@@ -131,7 +132,6 @@ void onTick(CBrain@ this)
 
 					blob.setKeyPressed(xpos < 0.0f ? key_left : key_right, true);
 					blob.setKeyPressed(ypos < 0.0f ? key_up : key_down, true);
-					print("Key Left: " + (xpos < 0.0f ? key_left : key_right));
 
 					// blob.setKeyPressed((territory_dir.x < 0.0f) ? key_left : key_right, true);
 					// blob.setKeyPressed((territory_dir.y > 0.0f) ? key_down : key_up, true);
@@ -146,6 +146,16 @@ void onTick(CBrain@ this)
 
 				// 	blob.setKeyPressed(xpos < 0.0f ? key_left : key_right, true);
 				// 	blob.setKeyPressed(ypos < 0.0f ? key_up : key_down, true);
+				// }
+			}
+			else if(mode == MODE_FIND_WATER){
+				// TODO: code this
+				// if() {// if "last water position" is a water tile
+
+				// }
+				// else{
+				// 	// nearby search for water
+				// 	// if no water, shark slowly dies
 				// }
 			}
 			else{
@@ -168,7 +178,6 @@ void onTick(CBrain@ this)
 				if(player is null){ return; }
 				if(player.getBlob() is null){ return; }
 				if(blob is null) { return; }
-				print("Target is null: " + (target is null));
 
 				if(player.getBlob().hasTag("flesh")
 				&& player.getBlob().isInWater() &&

@@ -430,12 +430,11 @@ void ManageCamera(CBlob@ this)
 	f32 zoom = camera.targetDistance;
 	bool fixedCursor = true;
 
-
-
 	if (zoom < 1.0f)  // zoomed out
 	{
 		camera.mousecamstyle = 1; // fixed
 	}
+
 	else if(this !is null){
 		if(this.getCarriedBlob() !is null){
 			if(this.getCarriedBlob().hasTag("non-fixed camera")){
@@ -443,22 +442,15 @@ void ManageCamera(CBlob@ this)
 			}
 		}
 	}
-	else
-	{
-		camera.mousecamstyle = 1; // force fixed camera
-		// gunner
-		// if (this.isAttachedToPoint("GUNNER"))
-		// {
-		// 	camera.mousecamstyle = 2;
-		// }
-		// else if (g_fixedcamera) // option
-		// {
-		// 	camera.mousecamstyle = 1; // fixed
-		// }
-		// else
-		// {
-		// 	camera.mousecamstyle = 2; // soldatstyle
-		// }
+
+	else if(this !is null){
+		if(this.hasTag("non-fixed camera")){
+			camera.mousecamstyle = 2;
+		}
+	}
+
+	else{
+		camera.mousecamstyle = 1;
 	}
 
 	// camera

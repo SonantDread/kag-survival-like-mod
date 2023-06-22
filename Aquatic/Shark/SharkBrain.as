@@ -1,4 +1,9 @@
-//brain
+// shark brain
+
+// TODO: AGGRESSIVE SHARK
+// TODO: SHARK AIMS TO GO BACK IN WATER IF IT GOES OUT
+
+// TODO: builderlogic.as line 374
 
 #define SERVER_ONLY
 
@@ -7,9 +12,10 @@
 
 void onInit(CBrain@ this)
 {
-	CBlob @blob = this.getBlob();
+	CBlob@ blob = this.getBlob();
 	blob.set_u8(delay_property , 5 + XORRandom(5));
 	blob.set_u8(state_property, MODE_IDLE);
+	blob.set_Vec2f("last water position", blob.getPosition());
 
 	if (!blob.exists(terr_rad_property))
 	{
@@ -50,7 +56,7 @@ void onInit(CBrain@ this)
 
 void onTick(CBrain@ this)
 {
-	CBlob @blob = this.getBlob();
+	CBlob@ blob = this.getBlob();
 
 	u8 delay = blob.get_u8(delay_property);
 	if (delay > 0) delay--;
@@ -60,177 +66,145 @@ void onTick(CBrain@ this)
 	{
 		Vec2f terpos = blob.getPosition();
 		terpos.y += blob.getRadius();
-		blob.set_Vec2f(terr_pos_property, terpos);	}
+		blob.set_Vec2f(terr_pos_property, terpos);
+    }
 
 	if (delay == 0)
 	{
 		delay = 4 + XORRandom(8);
 
-		Vec2f pos = blob.getPosition();
-		bool facing_left = blob.isFacingLeft();
-
-		{
-			u8 mode = blob.get_u8(state_property);
-			u8 personality = blob.get_u8(personality_property);
-
-			//printf("mode " + mode);
-
-			//"blind" attacking
-			if (mode == MODE_TARGET)
-			{
-				CBlob@ target = getBlobByNetworkID(blob.get_netid(target_property));
-
-				if (target is null || XORRandom(blob.get_u8(target_lose_random)) == 0 || target.isInInventory())
-				{
-					mode = MODE_IDLE;
-				}
-				else
-				{
-					Vec2f tpos = target.getPosition();
-
-					f32 search_radius = blob.get_f32(target_searchrad_property);
-
-					if ((tpos - pos).getLength() >= (search_radius))
-					{
-						mode = MODE_IDLE;
-					}
-
-					blob.setKeyPressed((tpos.x < pos.x) ? key_left : key_right, true);
-
-					if (personality & DONT_GO_DOWN_BIT == 0 || (blob.isOnGround() && tpos.y <= pos.y + 3 * blob.getRadius()))
-					{
-						blob.setKeyPressed((tpos.y < pos.y) ? key_up : key_down, true);
-					}
-				}
-			}
-			//"blind" fleeing
-			else if (mode == MODE_FLEE)
-			{
-				CBlob@ target = getBlobByNetworkID(blob.get_netid(target_property));
-
-				if (target is null || target.isInInventory())
-				{
-					mode = MODE_IDLE;
-				}
-				else
-				{
-					Vec2f tpos = target.getPosition();
-					const f32 search_radius = blob.get_f32(target_searchrad_property);
-					if ((tpos - pos).getLength() >= search_radius * 3.0f)
-					{
-						mode = MODE_IDLE;
-					}
-					else
-					{
-						blob.setKeyPressed((tpos.x > pos.x) ? key_left : key_right, true);
-						blob.setKeyPressed((tpos.y > pos.y) ? key_up : key_down, true);
-					}
-				}
-			}
-			// has a friend
-			else if (mode == MODE_FRIENDLY)
-			{
-				CBlob@ our_friend = getBlobByNetworkID(blob.get_netid(friend_property));
-				if (our_friend is null)
-				{
-					mode = MODE_IDLE;
-				}
-				else
-				{
-					Vec2f tpos = our_friend.getPosition();
-					const f32 search_radius = blob.get_f32(target_searchrad_property);
-					const f32 dist = (tpos - pos).getLength();
-					if (dist >= search_radius * 3)
-					{
-						mode = MODE_IDLE;
-					}
-					if (blob.getRadius() * 2.0f < dist)
-					{
-						blob.setKeyPressed((tpos.x < pos.x) ? key_left : key_right, true);
-						//blob.setKeyPressed( (tpos.y < pos.y) ? key_up : key_down, true); hack for land animal
-					}
-				}
-			}
-			else //mode == idle
-			{
-				if (personality != 0) //we have a special personality
-				{
-					f32 search_radius = blob.get_f32(target_searchrad_property);
-					string name = blob.getName();
-
-					CBlob@[] blobs;
-					blob.getMap().getBlobsInRadius(pos, search_radius, @blobs);
-
-					for (uint step = 0; step < blobs.length; ++step)
-					{
-						CBlob@ other = blobs[step];
-
-						if (other is blob) continue; //lets not run away from / try to eat ourselves...
-
-						if (personality & SCARED_BIT != 0)   //scared
-						{
-							if (other.getRadius() > blob.getRadius() && other.hasTag("flesh")) // not scared of same or smaller creatures
-							{
-								mode = MODE_FLEE;
-								blob.set_netid(target_property, other.getNetworkID());
-								break;
-							}
-						}
-
-						if (personality & AGGRO_BIT != 0)  //aggressive
-						{
-							if (other.getName() != name && //dont eat same type of blob
-							        other.hasTag("flesh")) //attack flesh blobs
-							{
-								mode = MODE_TARGET;
-								blob.set_netid(target_property, other.getNetworkID());
-								break;
-							}
-						}
-					}
-				}
-
-				if (blob.getTickSinceCreated() > 30) // delay so we dont get false territory pos
-				{
-					Vec2f territory_pos = blob.get_Vec2f(terr_pos_property);
-					f32 territory_range = blob.get_f32(terr_rad_property);
-
-					Vec2f territory_dir = (territory_pos - pos);
-					if (territory_dir.Length() > territory_range && !blob.hasAttached())
-					{
-						//head towards territory
-
-						blob.setKeyPressed((territory_dir.x < 0.0f) ? key_left : key_right, true);
-						blob.setKeyPressed((territory_dir.y > 0.0f) ? key_down : key_up, true);
-					}
-					else
-					{
-						if (personality & TAMABLE_BIT != 0 && blob.hasAttached()) // shake off anyone riding
-						{
-							blob.setKeyPressed(blob.wasKeyPressed(key_right) ? key_left : key_right, true);
-						}
-						else if (personality & STILL_IDLE_BIT == 0)
-						{
-							u8 randomMoveFrequency = blob.get_u8("random move freq");
-							//change direction at random or when on wall
-
-							if (XORRandom(randomMoveFrequency) == 0 || blob.isOnWall())
-							{
-								blob.setKeyPressed(blob.wasKeyPressed(key_right) ? key_left : key_right, true);
-							}
-
-							if (XORRandom(randomMoveFrequency) == 0 || blob.isOnCeiling() || blob.isOnGround())
-							{
-								blob.setKeyPressed(blob.wasKeyPressed(key_down) ? key_down : key_down, true);
-							}
-						}
-					}
-				}
-
-			}
-
-			blob.set_u8(state_property, mode);
+		if(blob.isInWater()){
+			blob.set_Vec2f("last water position", blob.getPosition());
 		}
+
+        u8 mode = blob.get_u8(state_property);
+
+		CBlob@ target = getBlobByNetworkID(blob.get_netid(target_property));
+
+        if (target is null || XORRandom(blob.get_u8(target_lose_random)) == 0 || target.isInInventory()) {
+            mode = MODE_IDLE;
+        }
+        else { // target exists, set modes
+			f32 search_radius = blob.get_f32(target_searchrad_property) * 10;
+
+			if(!blob.isInWater()){
+				mode = MODE_FIND_WATER;
+			}
+
+			else if(!target.isInWater()){ // try to stay in water
+				mode = MODE_IDLE;
+			}
+
+			else if((target.getPosition() - blob.getPosition()).getLength() >= (search_radius))
+			{
+				mode = MODE_IDLE;
+			}
+
+			else if(XORRandom(blob.get_u8(target_lose_random)) == 0){
+				mode = MODE_IDLE;
+			}
+
+			else{
+				mode = MODE_TARGET;
+			}
+		}
+
+		if(mode == MODE_TARGET){
+			Vec2f pos = blob.getPosition();
+			Vec2f targetpos = target.getPosition();
+
+			f32 search_radius = blob.get_f32(target_searchrad_property) * 5;
+
+			// are we inside the radius of finding a target?
+			if((targetpos - pos).getLength() <= search_radius){
+				// todo: code shark target mode, and find water
+				this.SetPathTo(targetpos, false);
+				this.SetTarget(target);
+
+				// if(!getMap().rayCastSolidNoBlobs(pos, targetpos)){
+					// direct path to target
+					// TODO: maybe this somehow gets stuck on other blobs?
+					// TODO: maybe this gets stuck on walls?
+					f32 xpos = (targetpos.x - pos.x);
+					f32 ypos = (targetpos.y - pos.y);
+
+					blob.setKeyPressed(xpos < 0.0f ? key_left : key_right, true);
+					blob.setKeyPressed(ypos < 0.0f ? key_up : key_down, true);
+
+					// blob.setKeyPressed((territory_dir.x < 0.0f) ? key_left : key_right, true);
+					// blob.setKeyPressed((territory_dir.y > 0.0f) ? key_down : key_up, true);
+				// }
+				// else{
+				// 	//not a direct path to target
+				// 	// TODO: add this
+				// 	print("path not direct.");
+
+				// 	f32 xpos = (targetpos.x - pos.x);
+				// 	f32 ypos = (targetpos.y - pos.y);
+
+				// 	blob.setKeyPressed(xpos < 0.0f ? key_left : key_right, true);
+				// 	blob.setKeyPressed(ypos < 0.0f ? key_up : key_down, true);
+				// }
+			}
+			else if(mode == MODE_FIND_WATER){
+				// TODO: code this
+				// if() {// if "last water position" is a water tile
+
+				// }
+				// else{
+				// 	// nearby search for water
+				// 	// if no water, shark slowly dies
+				// }
+			}
+			else{
+				mode = MODE_IDLE;
+			}
+		}
+
+		if (mode == MODE_IDLE) // find a new target
+		{
+			// print("finding new target");
+			f32 search_radius = blob.get_f32(target_searchrad_property) * 5;
+			string name = blob.getName();
+
+			CBlob@[] available_players;
+
+			// if()
+			for(int player_index = 0; player_index < getPlayerCount(); ++player_index){
+				CPlayer@ player = getPlayer(player_index);
+
+				if(player is null){ return; }
+				if(player.getBlob() is null){ return; }
+				if(blob is null) { return; }
+
+				if(player.getBlob().hasTag("flesh")
+				&& player.getBlob().isInWater() &&
+				(player.getBlob().getPosition() - blob.getPosition()).getLength() <= search_radius){
+					available_players.push_back(player.getBlob());
+				}
+			}
+			
+			if(available_players.size() > 0){
+				CBlob@ closestplayer = available_players[0];
+
+				for(int closest = 0; closest < available_players.size(); ++closest){
+					if(closest == 0){ continue; } // closest already set to this
+					if((closestplayer.getPosition() - available_players[closest].getPosition()).getLength() > 0){
+						// the other player is closer
+						CBlob@ closestplayer = available_players[closest];
+					}
+				}
+
+				blob.set_netid(target_property, closestplayer.getNetworkID());
+				print("Target: " + closestplayer.getPlayer().getUsername());
+				mode = MODE_TARGET;
+			}
+			else{
+				// TODO: add random moving
+			}
+		}
+
+        blob.set_u8(state_property, mode);
 	}
 	else
 	{

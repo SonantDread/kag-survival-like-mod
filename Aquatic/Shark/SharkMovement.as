@@ -53,38 +53,35 @@ void onTick(CMovement@ this)
 	const f32 swimspeed = blob.get_f32("swimspeed");
 	const f32 swimforce = blob.get_f32("swimforce");
 
-	//if (inwater)  opt
+	Vec2f vel = blob.getVelocity();
+	Vec2f waterForce;
+
+	//up and down
+	if (blob.isKeyPressed(key_up)
+			&& vel.y > -swimspeed)
 	{
-		Vec2f vel = blob.getVelocity();
-		Vec2f waterForce;
-
-		//up and down
-		if (blob.isKeyPressed(key_up)
-		        && vel.y > -swimspeed)
-		{
-			waterForce.y -= 1;
-		}
-
-		if (blob.isKeyPressed(key_down)
-		        && vel.y < swimspeed)
-		{
-			waterForce.y += 1;
-		}
-
-		//left and right
-		if (blob.isKeyPressed(key_left)
-		        && vel.x > -swimspeed)
-		{
-			waterForce.x -= 1;
-		}
-
-		if (blob.isKeyPressed(key_right)
-		        && vel.x < swimspeed)
-		{
-			waterForce.x += 1;
-		}
-
-		waterForce *= swimforce * blob.getMass();
-		blob.AddForce(waterForce);
+		waterForce.y -= 1;
 	}
+
+	if (blob.isKeyPressed(key_down)
+			&& vel.y < swimspeed)
+	{
+		waterForce.y += 1;
+	}
+
+	//left and right
+	if (blob.isKeyPressed(key_left)
+			&& vel.x > -swimspeed)
+	{
+		waterForce.x -= 1;
+	}
+
+	if (blob.isKeyPressed(key_right)
+			&& vel.x < swimspeed)
+	{
+		waterForce.x += 1;
+	}
+
+	waterForce *= swimforce * blob.getMass();
+	blob.AddForce(waterForce);
 }

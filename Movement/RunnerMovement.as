@@ -356,7 +356,7 @@ void onTick(CMovement@ this)
 					{
 						moveVars.wallrun_current = Maths::Min(pos.y - 1.0f, moveVars.wallrun_current - 1.0f);
 
-						moveVars.walljumped = true;
+						moveVars.walljumped = true; // todo: check this code below
 						if (set_contact || getGameTime() % 5 == 0)
 						{
 							dust = true;

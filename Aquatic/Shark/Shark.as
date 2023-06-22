@@ -4,7 +4,7 @@
 
 void onInit(CSprite@ this)
 {
-	this.ReloadSprites(10, 10); // grey shark
+	this.ReloadSprites(0, 0);
 }
 
 const string angle_prop = "shark angle";
@@ -68,6 +68,7 @@ void onInit(CBlob@ this)
 	//for EatOthers
 	string[] tags = {"player", "flesh"};
 	this.set("tags to eat", tags);
+	this.Tag("shark");
 
 	this.set_f32("bite damage", 1.5f);
 
@@ -141,7 +142,7 @@ void onTick(CBlob@ this)
 			}
 
 			// shark lunge
-			if (XORRandom(5) == 0 && getGameTime() - this.get_s32("last lunged") > (XORRandom(6)+3) * getTicksASecond() && b !is null && this !is null) {
+			if (XORRandom(5) == 0 && getGameTime() - this.get_s32("last lunged") > (XORRandom(6)+3) * getTicksASecond() && b !is null && this !is null && this.isInWater()) {
 				Vec2f sharkpos = this.getPosition();
 				Vec2f playerpos = b.getPosition();
 

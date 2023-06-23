@@ -229,14 +229,18 @@ namespace Material
 		if (damage <= 0.f) return;
 		CMap@ map = getMap();
 
-		if (type >= 272 && type <= 286){ // ! doesnt work
+		// Only solid tiles yield materials
+		if (!map.isTileSolid(type) && type <= 255) { return; }
+
+		if (type >= 272 && type <= 286){
 			createFor(this, 'mat_sand', 5.0f * damage);
 		}
 
-		// Only solid tiles yield materials
-		if (!map.isTileSolid(type) || type >= 257) return; // here we have type check, custom tiles always return false for istilesolid
+		else if (map.isTileGround(type)){
+			createFor(this, 'mat_leaves', 5.0f * damage);
+		}
 
-		if (map.isTileThickStone(type))
+		else if (map.isTileThickStone(type))
 		{
 			createFor(this, 'mat_stone', 6.f * damage);
 		}

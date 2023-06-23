@@ -51,7 +51,7 @@ def label_image(image_path):
     labeled_image.show()
 
 # Path to the input image
-image_path = os.getcwd() + "\\world.png"
+image_path = os.getcwd() + "/Materials/Materials.png"
 
 # Label the image
 label_image(image_path)

@@ -17,7 +17,6 @@ enum modes
 {
 	MODE_IDLE = 0, // random swim
 	MODE_FIND_WATER, // out of water
-	MODE_FIND_FRIENDS // find other jellyfish
 }
 
 shared class AnimalVars

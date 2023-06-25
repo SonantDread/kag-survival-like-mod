@@ -1,20 +1,48 @@
+
+
 #include "Hitters.as"
 #include "KnockedCommon.as"
-
+#include "PressOldKeys.as"
+// TODO: remove jellyfish drift, add going up / down
 void onInit(CBlob@ this){
     this.Tag("flesh");
-    this.Tag("builder always hit");
     this.Tag("jellyfish");
     this.set_s32("last sting time", getGameTime());
 
     this.set_Vec2f("last water position", this.getPosition()); // assume we spawn in water
     this.getShape().SetRotationsAllowed(false);
     this.getBrain().server_SetActive(true);
+    this.server_setTeamNum(-1); // -1 == 255 == spectator
 }
 
 void onTick(CBlob@ this){
-    if(getGameTime() % 5 == 0){
-        this.AddForce(Vec2f(0.0f, 0.01f)); // slowly drift down
+    Vec2f pos = this.getPosition();
+    if(getGameTime() % 90 == 0){ // check to see if tile is below us by 7 blocks
+        if(getMap().rayCastSolidNoBlobs(pos, Vec2f(pos.x, pos.y + (7.0f * getMap().tilesize)))){
+            this.setKeyPressed(key_up, true); // TODO: fix velocity when going up
+        }
+        else{
+            this.setKeyPressed(key_down, true);
+        }
+    }
+    else{
+        PressOldKeys(this);
+    }
+
+    if((getGameTime() - this.get_s32("last sting time")) < 30) { return; } // cant sting
+
+    // sting nearby players
+    for(int player_index = 0; player_index < getPlayerCount(); ++player_index){
+        CPlayer@ player = getPlayer(player_index);
+        if(player is null){ return; }
+
+        CBlob@ blob = player.getBlob();
+        if(blob is null){ return; }
+
+        if(blob.hasTag("flesh") && blob.isOverlapping(this)){
+            Sting(blob);
+            this.set_s32("last sting time", getGameTime());
+        }
     }
 }
 
@@ -38,6 +66,10 @@ void Sting(CBlob@ this){
     // shoot player back
     Vec2f velocity = this.getVelocity();
     f32 speedx = -velocity.x * 0.75f;
-    f32 speedy = (-velocity.y * 0.75f) - 1.0f; // todo: is this - 1.0f needed?
+    f32 speedy = (-velocity.y * 0.5f) - 1.0f; // todo: is this - 1.0f needed?
     this.setVelocity(Vec2f(speedx, speedy));
+}
+
+bool isTileSolidatVec2f(Vec2f pos){
+    return (getMap().isTileSolid(pos) || getMap().hasTileFlag(getMap().getTileOffsetFromTileSpace(pos), Tile::SOLID));
 }

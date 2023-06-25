@@ -4,8 +4,8 @@ void onTick(CMovement@ this)
 {
     CBlob@ blob = this.getBlob();
 
-    const f32 swimspeed = 0.6f;
-    const f32 swimforce = 0.6f;
+    const f32 swimspeed = 0.25f;
+    const f32 swimforce = 0.25f;
 
     Vec2f vel = blob.getVelocity();
     Vec2f waterForce;

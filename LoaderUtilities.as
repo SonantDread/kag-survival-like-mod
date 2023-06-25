@@ -13,7 +13,7 @@ TileType server_onTileHit(CMap@ map, f32 damage, u32 index, TileType oldTileType
     if(map.getTile(index).type > 255)
     {
         switch(oldTileType)
-        {
+        {   // custom tiles work by just setting new tile:
             case CMap::custom_tile_sand:
             case CMap::custom_tile_sand_2:
             case CMap::custom_tile_sand_3:

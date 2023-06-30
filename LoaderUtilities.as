@@ -141,18 +141,18 @@ void onSetTile(CMap@ map, u32 index, TileType tile_new, TileType tile_old)
         }
     }
 	// set sand backwalls when blocks are placed over it
-        CMap::Sector@[] sectors;
-        map.getSectorsAtPosition(pos, sectors);
+    CMap::Sector@[] sectors;
+    map.getSectorsAtPosition(pos, sectors);
 
-        // replaces sand backwalls when it's overlaying block is broken
-        for(int i = 0; i < sectors.size(); i++){
-            if(sectors[i].name == "SAND_BACKWALL"){
-                map.SetTileSupport(index, -1); // TODO: fix this line of code: if blocks above this are placed
-                if(!map.isTileSolid(pos) && !map.isTileBackground(map.getTile(pos))){
-                    map.SetTile(index, CMap::tile_sand_background+XORRandom(6));
-                    map.AddTileFlag(index, Tile::BACKGROUND | Tile::LIGHT_PASSES | Tile::WATER_PASSES);
-                    break;
-                }
+    // replaces sand backwalls when it's overlaying block is broken
+    for(int i = 0; i < sectors.size(); i++){
+        if(sectors[i].name == "SAND_BACKWALL"){
+            map.SetTileSupport(index, -1); // TODO: fix this line of code: if blocks above this are placed
+            if(!map.isTileSolid(pos) && !map.isTileBackground(map.getTile(pos))){
+                map.SetTile(index, CMap::tile_sand_background+XORRandom(6));
+                map.AddTileFlag(index, Tile::BACKGROUND | Tile::LIGHT_PASSES | Tile::WATER_PASSES);
+                break;
             }
         }
+    }
 }

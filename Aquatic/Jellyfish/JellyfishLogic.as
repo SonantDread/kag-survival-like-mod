@@ -1,9 +1,7 @@
-
-
 #include "Hitters.as"
 #include "KnockedCommon.as"
 #include "PressOldKeys.as"
-// TODO: remove jellyfish drift, add going up / down
+
 void onInit(CBlob@ this){
     this.Tag("flesh");
     this.Tag("jellyfish");
@@ -19,7 +17,7 @@ void onTick(CBlob@ this){
     Vec2f pos = this.getPosition();
     if(getGameTime() % 90 == 0){ // check to see if tile is below us by 7 blocks
         if(getMap().rayCastSolidNoBlobs(pos, Vec2f(pos.x, pos.y + (7.0f * getMap().tilesize)))){
-            this.setKeyPressed(key_up, true); // TODO: fix velocity when going up
+            this.setKeyPressed(key_up, true);
         }
         else{
             this.setKeyPressed(key_down, true);
@@ -66,7 +64,7 @@ void Sting(CBlob@ this){
     // shoot player back
     Vec2f velocity = this.getVelocity();
     f32 speedx = -velocity.x * 0.75f;
-    f32 speedy = (-velocity.y * 0.5f) - 1.0f; // todo: is this - 1.0f needed?
+    f32 speedy = (-velocity.y * 0.5f);
     this.setVelocity(Vec2f(speedx, speedy));
 }
 

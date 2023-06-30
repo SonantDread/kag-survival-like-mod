@@ -236,9 +236,9 @@ namespace Material
 			createFor(this, 'mat_sand', 5.0f * damage);
 		}
 
-		else if (map.isTileGround(type)){
-			createFor(this, 'mat_leaves', 5.0f * damage);
-		}
+		// else if (map.isTileGround(type)){
+		// 	createFor(this, 'mat_dirt', 5.0f * damage);
+		// }
 
 		else if (map.isTileThickStone(type))
 		{

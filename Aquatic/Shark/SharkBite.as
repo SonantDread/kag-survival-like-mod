@@ -3,6 +3,7 @@
 // eating other things
 // setup: set in properties a string[]
 // TODO: recode this file
+// TODO: make shark not braindead on land
 #include "Hitters.as";
 
 void onInit(CBlob@ this)
@@ -61,6 +62,8 @@ void onTick(CBlob@ this)
 	// TODO: support facing left & right, instead of just right
 
 	u32[] possibleblocks;
+
+	// todo: fix this, no blocks grabbed, size not issue
 	for(int y = 0; y < 5.0f; ++y){
 		for(int x = 0; x < 3.0f; ++x){
 			if(this.isFacingLeft()){ // todo: change these checks from u32 to Vec2f
@@ -76,8 +79,8 @@ void onTick(CBlob@ this)
 		}
 	}
 
-	print('hello');
 	if(possibleblocks.size() == 0){ return; }
+	print('hello');
 
 	u32 closestblock = possibleblocks[0];
 	for(int block = 0; block < possibleblocks.size(); ++block){
@@ -87,6 +90,7 @@ void onTick(CBlob@ this)
 	}
 
 	Vec2f newclosestblock = getMap().getTileSpacePosition(closestblock);
+	print("Tile: " + getMap().getTile(newclosestblock).type);
 
 	getMap().server_DestroyTile(newclosestblock, 1.0f);
 }

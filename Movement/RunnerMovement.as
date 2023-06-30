@@ -356,10 +356,12 @@ void onTick(CMovement@ this)
 					{
 						moveVars.wallrun_current = Maths::Min(pos.y - 1.0f, moveVars.wallrun_current - 1.0f);
 
-						moveVars.walljumped = true; // todo: check this code below
-						if (set_contact || getGameTime() % 5 == 0)
+						moveVars.walljumped = true;
+						if (set_contact || getGameTime() % 1 == 0) // FIX FOR BAD WALLCLIMBING
 						{
-							dust = true;
+							if(getGameTime() % 5 == 0){
+								dust = true;
+							}
 
 							f32 wallrun_speed = moveVars.jumpMaxVel * 1.2f;
 

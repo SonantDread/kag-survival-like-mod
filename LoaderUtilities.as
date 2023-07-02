@@ -153,6 +153,8 @@ void onSetTile(CMap@ map, u32 index, TileType tile_new, TileType tile_old)
                 map.AddTileFlag(index, Tile::BACKGROUND | Tile::LIGHT_PASSES | Tile::WATER_PASSES);
                 break;
             }
+
+            // get tile from space and go up, go into index format again and check if block, do this in a for loop until no blocks
         }
     }
 }

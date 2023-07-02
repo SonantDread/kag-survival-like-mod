@@ -13,7 +13,7 @@ void onTick(CMovement@ this)
     //up and down
     if (blob.isKeyPressed(key_up) && vel.y > -swimspeed)
     {
-        waterForce.y -= 0.039;
+        waterForce.y -= 0.039; // velocity before rocketing up
     }
 
     if (blob.isKeyPressed(key_down) && vel.y < swimspeed)

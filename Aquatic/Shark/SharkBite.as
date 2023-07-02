@@ -2,8 +2,7 @@
 
 // eating other things
 // setup: set in properties a string[]
-// TODO: recode this file
-// TODO: make shark not braindead on land
+
 #include "Hitters.as";
 
 void onInit(CBlob@ this)
@@ -58,22 +57,23 @@ void onTick(CBlob@ this)
 	// hitbox ~= 5 blocks
 	Vec2f pos = this.getPosition();
 
-	// TODO: check blocks in 3x2 in the direction and bite closest one
-	// TODO: support facing left & right, instead of just right
+	Vec2f[] possibleblocks;
 
-	u32[] possibleblocks;
-
-	// todo: fix this, no blocks grabbed, size not issue
-	for(int y = 0; y < 5.0f; ++y){
-		for(int x = 0; x < 3.0f; ++x){
-			if(this.isFacingLeft()){ // todo: change these checks from u32 to Vec2f
-				if(getMap().hasTileFlag(getMap().getTileOffsetFromTileSpace(Vec2f(pos.x - x, pos.y - y)), Tile::FLAMMABLE | Tile::SOLID)){
-					possibleblocks.push_back(getMap().getTileOffsetFromTileSpace(Vec2f(pos.x - x, pos.y - y)));
+	// todo: fix the radius on this
+	for(int y = 0; y < 5.0f; y++){
+		for(int x = 0; x < 3.0f; x++){
+			if(this.isFacingLeft()){
+				Vec2f pos = Vec2f((pos.x - x) * 8.0f, (pos.y - y) * 8.0f);
+				if(isTileEatable(pos)){
+					possibleblocks.push_back(pos);
+					printVec2f("position: ", pos);
 				}
 			}
 			else{
-				if(getMap().hasTileFlag(getMap().getTileOffsetFromTileSpace(Vec2f(pos.x + x, pos.y + y)), Tile::FLAMMABLE | Tile::SOLID)){
-					possibleblocks.push_back(getMap().getTileOffsetFromTileSpace(Vec2f(pos.x + x, pos.y + y)));
+				Vec2f pos = Vec2f((pos.x + x) * 8.0f, (pos.y + y) * 8.0f);
+				if(isTileEatable(pos)){
+					possibleblocks.push_back(pos);
+					printVec2f("position: ", pos);
 				}
 			}
 		}
@@ -82,17 +82,16 @@ void onTick(CBlob@ this)
 	if(possibleblocks.size() == 0){ return; }
 	print('hello');
 
-	u32 closestblock = possibleblocks[0];
+	Vec2f closestblock = possibleblocks[0];
 	for(int block = 0; block < possibleblocks.size(); ++block){
-		if(possibleblocks[block] > closestblock){
-			u32 closestblock = possibleblocks[block];
+		if(possibleblocks[block].getLength() > closestblock.getLength()){
+			Vec2f closestblock = possibleblocks[block];
 		}
 	}
 
-	Vec2f newclosestblock = getMap().getTileSpacePosition(closestblock);
-	print("Tile: " + getMap().getTile(newclosestblock).type);
+	print("Tile: " + getMap().getTile(closestblock).type);
 
-	getMap().server_DestroyTile(newclosestblock, 1.0f);
+	getMap().server_DestroyTile(closestblock, 1.0f);
 }
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point1)
@@ -174,4 +173,10 @@ void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@
 	{
 		this.getSprite().PlayRandomSound(this.get_string("bite sound"));
 	}
+}
+
+bool isTileEatable(Vec2f pos){
+	u32 tile = getMap().getTile(pos).type;
+	print("tile: " + tile);
+	return getMap().isTileWood(tile);
 }

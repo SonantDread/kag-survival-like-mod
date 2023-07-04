@@ -1,5 +1,5 @@
 // LoaderUtilities.as
-// TODO: FIX THIS FILE
+
 #include "CustomBlocks.as";
 
 bool onMapTileCollapse(CMap@ map, u32 offset)
@@ -13,7 +13,7 @@ TileType server_onTileHit(CMap@ map, f32 damage, u32 index, TileType oldTileType
     if(map.getTile(index).type > 255)
     {
         switch(oldTileType)
-        {   // custom tiles work by just setting new tile:
+        {   // custom tiles work by just setting new tile
             case CMap::custom_tile_sand:
             case CMap::custom_tile_sand_2:
             case CMap::custom_tile_sand_3:
@@ -153,8 +153,6 @@ void onSetTile(CMap@ map, u32 index, TileType tile_new, TileType tile_old)
                 map.AddTileFlag(index, Tile::BACKGROUND | Tile::LIGHT_PASSES | Tile::WATER_PASSES);
                 break;
             }
-
-            // get tile from space and go up, go into index format again and check if block, do this in a for loop until no blocks
         }
     }
 }

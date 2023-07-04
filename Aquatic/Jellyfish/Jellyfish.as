@@ -2,6 +2,7 @@
 
 #include "JellyfishConsts.as"
 #include "PressOldKeys.as"
+#include "TargetCommon.as"
 
 void onInit(CBrain@ this){
     this.getBlob().set_u8("action type", MODE_IDLE);
@@ -31,10 +32,48 @@ void onTick(CBrain@ this){
         else if(action == MODE_FIND_WATER){
             // todo: check if "last water position" is still water
             // try this? bool isInWater(Vec2f posWorldspace) *CMap*
+            if(getMap().isInWater(blob.get_Vec2f("last water position"))){
+                blob.set_u8("action type", MODE_TARGET);
+                blob.set_Vec2f("target position", blob.get_Vec2f("last water position"));
+            }
+            else{
+                Vec2f pos = SearchWaterNear(blob.get_Vec2f("last water position"));
+                if(pos == Vec2f(0, 0)){ return; }
+
+                else{
+                    blob.set_u8("action type", MODE_TARGET);
+                    blob.set_Vec2f("target position", pos);
+                }
+            }
+        }
+        
+        else if(action == MODE_TARGET){
+            Vec2f pos = blob.get_Vec2f("target position");
+            Vec2f targetpos = pos - blob.getPosition();
+
+            SetKeysCommon(blob, pos);
         }
     }
 
     else{
         PressOldKeys(blob);
     }
+}
+
+// expects a Vec2f position
+// returns (0,0) if no water is found
+Vec2f SearchWaterNear(Vec2f pos){
+    for(int y = 0; y < 5.0f; y++){
+        for(int x = 0; x < 5.0f; x++){
+            if(getMap().isInWater(Vec2f(pos.x + (x * 8.0f), pos.y + (y * 8.0f)))){
+                return Vec2f(pos.x + (x * 8.0f), pos.y + (y * 8.0f));
+            }
+
+            else if(getMap().isInWater(Vec2f(pos.x - (x * 8.0f), pos.y - (y * 8.0f)))){
+                return Vec2f(pos.x - (x * 8.0f), pos.y - (y * 8.0f));
+            }
+        }
+    }
+
+    return Vec2f(0,0);
 }

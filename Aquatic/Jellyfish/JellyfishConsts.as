@@ -16,6 +16,7 @@ const string target_lose_random = "target_lose_random";
 enum modes
 {
 	MODE_IDLE = 0, // random swim
+	MODE_TARGET, // for going to water
 	MODE_FIND_WATER, // out of water
 }
 

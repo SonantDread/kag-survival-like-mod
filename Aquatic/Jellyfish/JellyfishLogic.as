@@ -6,6 +6,7 @@ void onInit(CBlob@ this){
     this.Tag("flesh");
     this.Tag("jellyfish");
     this.set_s32("last sting time", getGameTime());
+    this.set_Vec2f("target position", this.getPosition());
 
     this.set_Vec2f("last water position", this.getPosition()); // assume we spawn in water
     this.getShape().SetRotationsAllowed(false);

@@ -9,6 +9,7 @@
 
 #include "PressOldKeys.as";
 #include "SharkConsts.as";
+#include "TargetCommon.as"
 
 void onInit(CBrain@ this)
 {
@@ -120,32 +121,9 @@ void onTick(CBrain@ this)
 				// todo: code shark target mode, and find water
 				this.SetPathTo(targetpos, false);
 				this.SetTarget(target);
-
-				// if(!getMap().rayCastSolidNoBlobs(pos, targetpos)){
-					// direct path to target
-					// TODO: maybe this somehow gets stuck on other blobs?
-					// TODO: maybe this gets stuck on walls?
-					f32 xpos = (targetpos.x - pos.x);
-					f32 ypos = (targetpos.y - pos.y);
-
-					blob.setKeyPressed(xpos < 0.0f ? key_left : key_right, true);
-					blob.setKeyPressed(ypos < 0.0f ? key_up : key_down, true);
-
-					// blob.setKeyPressed((territory_dir.x < 0.0f) ? key_left : key_right, true);
-					// blob.setKeyPressed((territory_dir.y > 0.0f) ? key_down : key_up, true);
-				// }
-				// else{
-				// 	//not a direct path to target
-				// 	// TODO: add this
-				// 	print("path not direct.");
-
-				// 	f32 xpos = (targetpos.x - pos.x);
-				// 	f32 ypos = (targetpos.y - pos.y);
-
-				// 	blob.setKeyPressed(xpos < 0.0f ? key_left : key_right, true);
-				// 	blob.setKeyPressed(ypos < 0.0f ? key_up : key_down, true);
-				// }
+				SetKeysCommon(blob, targetpos);
 			}
+
 			else if(mode == MODE_FIND_WATER){
 				// TODO: code this
 				// if() {// if "last water position" is a water tile
@@ -156,6 +134,7 @@ void onTick(CBrain@ this)
 				// 	// if no water, shark slowly dies
 				// }
 			}
+			
 			else{
 				mode = MODE_IDLE;
 			}

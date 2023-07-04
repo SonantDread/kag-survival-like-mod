@@ -59,21 +59,3 @@ void onTick(CBrain@ this){
         PressOldKeys(blob);
     }
 }
-
-// expects a Vec2f position
-// returns (0,0) if no water is found
-Vec2f SearchWaterNear(Vec2f pos){
-    for(int y = 0; y < 5.0f; y++){
-        for(int x = 0; x < 5.0f; x++){
-            if(getMap().isInWater(Vec2f(pos.x + (x * 8.0f), pos.y + (y * 8.0f)))){
-                return Vec2f(pos.x + (x * 8.0f), pos.y + (y * 8.0f));
-            }
-
-            else if(getMap().isInWater(Vec2f(pos.x - (x * 8.0f), pos.y - (y * 8.0f)))){
-                return Vec2f(pos.x - (x * 8.0f), pos.y - (y * 8.0f));
-            }
-        }
-    }
-
-    return Vec2f(0,0);
-}
